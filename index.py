@@ -47,7 +47,7 @@
 
 # ================================ Registration =============================
 
-from typing import Dict, Union
+from typing import Dict, Union, Any
 
 users: Dict[str, Dict[str, Union[int, str]]] = {}
 
@@ -60,6 +60,7 @@ def user_login() -> str:
                 raise ValueError("Input can not be empty")
         except ValueError as e:
             print("Warning!", e)
+            continue
         return user
 
 
@@ -94,25 +95,63 @@ def sign_up() -> None:
     login = user_login()
     age = user_age()
     password = user_password()
-
-    users[login] = {"age", age, "password", password}
+    users[login] = {"age": age, "password": password}
     print(f"User {login} successfully registered")
 
 
 def check_login() -> bool:
     print("=== Login ===")
-    login = input("Please enter your login").strip()
-    password = input("Please enter your password").strip()
+    max_attempts = 3
+    attempts = max_attempts
 
-    if login in users and users[login]["password"] == password:
-        print(f"Welcome {login}, you are {users[login]['age']} years old")
-        return True
-    else:
-        print("Invalid login or password")
-        return False
+    while attempts > 0:
+        login = input("Please enter your login: ").strip()
+        password = input("Please enter your password: ").strip()
+        if login in users and users[login]["password"] == password:
+            print(f"Welcome {login}, you are {users[login]['age']} years old")
+            return True
+        else:
+            attempts -= 1
+            if attempts > 0:
+                print(f"Invalid login or password. {attempts} ateempt(s) reaming")
+            else:
+                print("Invalid login or password, please try later")
+                return False
+    return True
+
+
+def menu() -> None:
+    while True:
+        try:
+            choise = int(
+                input("\n=== Menu ===\n1. Show my info\n2.Count from N to N\n3.Exit")
+            )
+            match choise:
+                case 1:
+                    print("\nRegistered user: ", users)
+                case 2:
+                    try:
+                        count_from = int(input("Enter start number: "))
+                        count_to = int(input("Enter end number (greater then start): "))
+                        if count_from > count_to:
+                            print("Start number must be less then equal to end number")
+                            continue
+                        elif count_from < 0 and count_to < 0:
+                            raise ValueError("The number cannot be negative")
+                        for i in range(count_from, count_to + 1):
+                            print(i, end=" ")
+                    except ValueError as e:
+                        print("Warning", e)
+                case 3:
+                    print("Exiting...")
+                    break
+                case _:
+                    print("Invalid choise, please try again with number 1, 2, 3")
+        except ValueError:
+            print("Invalid choise, please try again with number 1, 2, 3")
 
 
 if __name__ == "__main__":
     sign_up()
-    check_login()
-    print("\nRegistered users:", users)
+    if check_login():
+        menu()
