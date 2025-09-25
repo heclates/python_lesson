@@ -67,14 +67,13 @@ def user_login() -> str:
 def user_age() -> int:
     while True:
         try:
-            user_age = input("please enter your age: ")
-            age = int(user_age)
-            if age <= 0:
+            user_age = int(input("please enter your age: "))
+            if user_age <= 0:
                 raise ValueError("You can not be alive with less 0 years old")
-            elif age < 18:
+            elif user_age < 18:
                 print("You can not sign up, age must more then 17")
                 continue
-            return age
+            return user_age
         except ValueError as e:
             print("Warning!", e)
 
